@@ -19,6 +19,25 @@ class ViewController: UIViewController, UITableViewDataSource {
         fetchPosts()
 
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        guard let selectedIndexPath = tableView.indexPathForSelectedRow else { return }
+        
+        let selected = posts[selectedIndexPath.row]
+        
+        guard let detailViewController = segue.destination as? DetailViewController else { return }
+        detailViewController.post = selected
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: selectedIndexPath, animated: animated)
+        }
+
+    }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return posts.count
@@ -29,7 +48,7 @@ class ViewController: UIViewController, UITableViewDataSource {
 
         let post = posts[indexPath.row]
 
-        cell.summaryLabel.text = post.summary
+        cell.summaryLabel.text = post.caption.trimHTMLTags()
 
         if let photo = post.photos.first {
             let url = photo.originalSize.url
